@@ -13,27 +13,36 @@ const http = require('http');
 const https = require('https');
 const cors = require('cors');
 
-//build config from params
+// Build config from params
 const config = require('./config');
-const {https:{ key, cert}, port, isHttps, serviceName} = config;
-const credentials = {key, cert};
+const { https: { key, cert }, port, isHttps, serviceName } = config;
+const credentials = { key, cert };
 
-//setup app & its routes
+// Setup app & its routes
 const app = express();
 app.use(cors());
+
+// Add health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Import routes
 const routes = require('./routes/index.route');
 app.use(routes);
 
-//start http server
+// Start HTTP server
 const httpServer = http.createServer(app);
-httpServer.listen(port);
-console.log(`[${serviceName}] http server listening at port ${port}`);
+httpServer.listen(port, () => {
+  console.log(`[${serviceName}] HTTP server listening at port ${port}`);
+});
 
-//start https server
-if(isHttps) {
+// Start HTTPS server
+if (isHttps) {
   const httpsServer = https.createServer(credentials, app);
-  httpsServer.listen(port+1);
-  console.log(`[${serviceName}] https server listening at port ${port + 1}`);
+  httpsServer.listen(port + 1, () => {
+    console.log(`[${serviceName}] HTTPS server listening at port ${port + 1}`);
+  });
 }
 
 module.exports = { app };
