@@ -3,23 +3,23 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 14 # Specify the Node.js version you need
+      nodejs: 14
     commands:
       - echo Installing source NPM packages...
       - npm install
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - $(aws ecr get-login-password --region <your-region> | docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.<your-region>.amazonaws.com)
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 063738659414.dkr.ecr.ap-south-1.amazonaws.com
   build:
     commands:
       - echo Build Docker image...
-      - docker build -t <repository-name> .
-      - docker tag <repository-name>:latest <your-account-id>.dkr.ecr.<your-region>.amazonaws.com/<repository-name>:latest
+      - docker build -t kgennodejs .
+      - docker tag kgennodejs:latest 063738659414.dkr.ecr.ap-south-1.amazonaws.com/kgennodejs:latest
   post_build:
     commands:
       - echo Pushing Docker image to ECR...
-      - docker push <your-account-id>.dkr.ecr.<your-region>.amazonaws.com/<repository-name>:latest
+      - docker push 063738659414.dkr.ecr.ap-south-1.amazonaws.com/kgennodejs:latest
 
 artifacts:
   files:
