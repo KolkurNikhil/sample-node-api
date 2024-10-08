@@ -1,16 +1,25 @@
 version: 0.2
+
 phases:
+  install:
+    runtime-versions:
+      docker: 20
+    commands:
+      - echo Installing dependencies...
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 063738659414.dkr.ecr.ap-south-1.amazonaws.com)
       - REPOSITORY_URI=063738659414.dkr.ecr.ap-south-1.amazonaws.com/kgennodejs
+      - IMAGE_TAG=latest
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
   post_build:
     commands:
-      - echo Pushing the Docker image...
-      - docker push $REPOSITORY_URI:latest
+      - echo Build completed on `date`
+      - echo Pushing the Docker image to ECR...
+      - docker push $REPOSITORY
+
